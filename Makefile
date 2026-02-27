@@ -1,3 +1,12 @@
+# Detect OS and set Docker volume path accordingly
+ifeq ($(OS),Windows_NT)
+	# Windows: use //c/... format for Docker volume mounts
+	DOCKER_VOL := //$(subst \,/,$(CURDIR))
+else
+	# Unix-like: use standard path
+	DOCKER_VOL := $(CURDIR)
+endif
+
 .PHONY: build
 build:
 	go build -mod=vendor ./cmd/mtls-server
@@ -22,7 +31,8 @@ docker:
 .PHONY: lint
 lint:
 	docker run --rm -it \
-		-w /src -v $(shell pwd):/src \
+		-v $(DOCKER_VOL):/src \
+		-w /src \
 		golangci/golangci-lint:v1.56 golangci-lint run \
 		-v -c .golangci.yml
 
