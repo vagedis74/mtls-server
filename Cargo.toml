@@ -1,0 +1,20 @@
+[package]
+name = "mtls-server"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+actix-web = { version = "4.13", features = ["rustls-0_23"] }
+actix-tls = { version = "3.5", features = ["rustls-0_23"] }
+rustls = { version = "0.23" }
+rustls-pemfile = "2"
+x509-parser = "0.16"
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "1"
+anyhow = "1"
+
+[[bin]]
+name = "mtls-server"
+path = "src/main.rs"
