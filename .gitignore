@@ -1,0 +1,41 @@
+# Build artifacts
+/target/
+/cmd/mtls-server/mtls-server
+*.o
+*.a
+*.so
+
+# Dependencies
+/vendor/
+node_modules/
+package-lock.json
+
+# Certificates and keys
+*.pem
+*.p12
+*.csr
+*.srl
+
+# Let's Encrypt
+/letsencrypt/
+
+# Environment files
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp

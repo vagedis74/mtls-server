@@ -1,0 +1,16 @@
+tunnel: bce7e259-b454-412c-b65a-a50f4e3a9f4c
+credentials-file: C:\Users\wouter.bon\mtls-server\credentials.json
+protocol: http2
+
+ingress:
+  - hostname: mtls.nietst.uk
+    service: https://localhost:9443
+    originRequest:
+      originServerName: mtls.nietst.uk
+      noTLSVerify: false
+  - hostname: nietst.uk
+    service: https://localhost:9443
+    originRequest:
+      originServerName: mtls.nietst.uk
+      noTLSVerify: false
+  - service: http_status:404

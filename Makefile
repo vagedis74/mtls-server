@@ -64,3 +64,28 @@ cargo-build:
 .PHONY: cargo-run
 cargo-run:
 	cargo run
+
+# Let's Encrypt certificate targets
+.PHONY: install-acme
+install-acme:
+	npm install acme-client dotenv
+
+.PHONY: issue-cert
+issue-cert:
+	mkdir -p letsencrypt && node scripts/issue-cert.js
+
+.PHONY: issue-cert-prod
+issue-cert-prod:
+	mkdir -p letsencrypt && node scripts/issue-cert.js --production
+
+.PHONY: renew-cert
+renew-cert:
+	node scripts/renew-cert.js
+
+.PHONY: renew-cert-force
+renew-cert-force:
+	node scripts/renew-cert.js --force
+
+.PHONY: check-cert
+check-cert:
+	openssl x509 -in cert.pem -noout -dates -subject -issuer
