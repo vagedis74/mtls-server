@@ -55,13 +55,15 @@ async fn main() -> std::io::Result<()> {
     println!("Starting mTLS server on {}", server_addr);
 
     // Create and run HTTP server
+    // NOTE: .on_connect() must be called BEFORE .bind_rustls_0_23() because
+    // bind captures on_connect_fn by value at call time.
     HttpServer::new(|| {
         App::new()
             .route("/health", web::get().to(health_handler))
             .route("/api/certs", web::get().to(certs_handler))
     })
-    .bind_rustls_0_23(&server_addr, tls_config)?
     .on_connect(on_connect_handler)
+    .bind_rustls_0_23(&server_addr, tls_config)?
     .run()
     .await
 }
