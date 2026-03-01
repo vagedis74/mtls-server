@@ -142,7 +142,7 @@ async function renewCertificate() {
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     const serverLog = path.join(LOG_DIR, 'mtls-server.log');
-    exec(`"${MTLS_SERVER_EXE}" >> "${serverLog}" 2>&1`, { detached: true, cwd: PROJECT_DIR });
+    exec(`"${MTLS_SERVER_EXE}" >> "${serverLog}" 2>&1`, { detached: true, cwd: PROJECT_DIR, env: { ...process.env, BIND_PORT: '9445' } });
     console.log(`[SERVER] ✓ Started (log: ${serverLog})`);
 
     // Restart cloudflared

@@ -4,13 +4,7 @@ protocol: http2
 
 ingress:
   - hostname: mtls.nietst.uk
-    service: https://localhost:9443
-    originRequest:
-      originServerName: mtls.nietst.uk
-      noTLSVerify: false
+    service: tcp://127.0.0.1:9445
   - hostname: nietst.uk
-    service: https://localhost:9443
-    originRequest:
-      originServerName: mtls.nietst.uk
-      noTLSVerify: false
+    service: tcp://127.0.0.1:9445
   - service: http_status:404
