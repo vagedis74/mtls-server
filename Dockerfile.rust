@@ -1,0 +1,42 @@
+# Build Rust binary
+FROM rust:latest AS builder
+
+WORKDIR /build
+
+COPY Cargo.toml Cargo.lock ./
+COPY src ./src
+
+RUN cargo build --release
+
+# Final stage with cloudflared
+FROM debian:trixie-slim
+
+# Install dependencies and download cloudflared
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates wget && \
+    wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -O /usr/local/bin/cloudflared && \
+    chmod +x /usr/local/bin/cloudflared && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy Rust binary
+COPY --from=builder /build/target/release/mtls-server .
+
+# Copy certificates
+COPY cert.pem key.pem ca.pem ./
+
+# Create cloudflared config directory
+RUN mkdir -p /etc/cloudflared
+
+# Copy cloudflared config
+COPY cloudflared-config.yml /etc/cloudflared/config.yml
+
+# Copy tunnel credentials
+COPY credentials.json /etc/cloudflared/credentials.json
+
+# Create startup script with proper line endings
+RUN printf '#!/bin/sh\nset -e\n\necho "Starting cloudflared tunnel..."\ncloudflared tunnel --config /etc/cloudflared/config.yml run &\nCLOUDFLARED_PID=$!\n\nsleep 2\n\necho "Starting Rust mTLS server on port 9443..."\nls -la /app/\n/app/mtls-server\n\nkill $CLOUDFLARED_PID 2>/dev/null || true\n' > /app/entrypoint.sh && chmod +x /app/entrypoint.sh
+
+EXPOSE 9443
+
+ENTRYPOINT ["/app/entrypoint.sh"]
